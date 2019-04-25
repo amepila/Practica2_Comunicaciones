@@ -3,7 +3,7 @@
 %% Autores: 
 %   Jose Andres Hernandez Hernandez ie704453
 %   Robin Salgado de Anda           ie686481
-%   Isaac Velazquez
+%   Isaac Yael Vazquez Gonzalez     ie703092
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parte 1 - Caracterizacion del Canal del Comunicacion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
