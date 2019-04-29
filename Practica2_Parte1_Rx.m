@@ -32,3 +32,8 @@ ylabel('Amplitud')                      % Eje Y como amplitud de la senal
 xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
 title('Senal Recibida')                 % Titulo de la senal recibida
 grid on
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Parte 2 - Transmision en Banda Base
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Creacion

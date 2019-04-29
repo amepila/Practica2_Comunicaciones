@@ -1,9 +1,9 @@
-%% Sistemas de Comunicaciones Digitales - Practica 2
+%% Sistemas de Comunicaciones Digitales - Practica 2 Recepcion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Autores: 
 %   Jose Andres Hernandez Hernandez ie704453
 %   Robin Salgado de Anda           ie686481
-%   Isaac Velazquez
+%   Isaac Yael Vazquez Gonzalez     ie703092
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parte 1 - Caracterizacion del Canal del Comunicacion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -24,8 +24,15 @@ disp('Grabando Señal...');      % Mensaje de inicio de grabacion
 recordblocking(recObj, time);   % Grabacion de audio determinada por time
 disp('Fin de la grabacion');    % Mensaje de final de grabacion
 %% Recuperacion de los datos
-%play(recObj);
-SIGNAL_RECEIVED = getaudiodata(recObj);
-plot(SIGNAL_RECEIVED,'r');
-title('RC modulated DSB-sc ');
-grid on;
+
+%play(recObj);                          % Primer testeo de audio recibido
+signal_received = getaudiodata(recObj); % Obtencion de senal recibida
+plot(signal_received,'r')               % Graficacion de senal recibida
+ylabel('Amplitud')                      % Eje Y como amplitud de la senal
+xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
+title('Senal Recibida')                 % Titulo de la senal recibida
+grid on
+
+%% Parte 2 - Transmision en Banda Base
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Creacion 

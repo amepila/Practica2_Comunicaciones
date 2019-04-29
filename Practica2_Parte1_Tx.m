@@ -58,3 +58,68 @@ t = 0:1/fs:2;                   % Vector de tiempo de 2s con pasos de 1/fs
 y = chirp(t,500,2,20e3);        % Senal chirp de 2s segundos de 500 a 20kHz
 pwelch(y,[],[],[],fs,'power');  % Analisis con pwelch
 soundsc(y,fs);                  % Reproducimos
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Parte 2 - Transmision en Banda Base
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Generacion de pulso SRRC con r = 0.5 y frecuencia maxima B = 1800Hz. 
+%   Fs = 96000 Hz en Tx
+
+close all; clc; clear all;      % Borramos todo
+Fs = 96000;                     % Frecuencia de muestreo
+B = 1800;                       % Frecuencia maxima
+beta = 0.5;                     % Beta del pulso
+Rb = 2*B/(1+beta);              % Bit Rate
+E = 1/Rb;                       % Energia
+mp = Fs/Rb;                     % Muestras por bit
+Tp = 1/Rb;                      % Periodo de bit
+Ts = 1/Fs;                      % Intervalo de muestreo
+D = Tp/Ts;                      % Duracion de pulso 
+type = 'srrc';                  % Tipo de pulso
+
+[Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC
+stem(Prc)                                       % Graficacion del pulso
+% Preambulo de 4 octetos
+bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1];
+
+%% Concatenacion de bits a enviar: 
+%   Utilizar la imagen de la Lena recortada concatenada con un header 
+%   y generar una senal Polar utilizando el pulso base
+
+load lena512.mat                    % Carga de la imagen de la lena
+lenarec = lena512(252:284,318:350); % Recorte de la imagen a 32x32 pixeles
+imshow(uint8(lenarec));             % Visualizacion de la imagen recortada
+b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
+b = b';                             % Transpuesta de la matrix
+bits = b(:);                        % Conversion a vector
+[w h] = size(lenarec);              % Obtencion de dimensiones de la imagen
+
+% Creacion de header con informacion de las dimensiones de la imagen
+header = [de2bi(w,8,'left-msb'),de2bi(h,8,'left-msb')];
+header = cast(header,'int8');       % Casteo del header a signado de 8-bits
+bits = [header,bits'];              % Concatenacion de info con el header
+
+%% Generacion de senal Polar NRZ con pulso base 
+%   
+pnrz1 = bits;                       % Se guarda la informacion
+pnrz1(pnrz1 == 0) = -1;             % Valores en 0 se transforman en -1
+pnrz = zeros(1,(numel(bits))*mp);   % Creacion del vector para Pulse-train
+pnrz(1:mp:end) = pnrz1;             % Tren de pulsos con la informacion
+signalPNRZ = conv(pnrz, Prc);       % Convolucion con pulso base
+stem(signalPNRZ(1:mp*10))           % Verificacion de los primeros 10
+
+%% Adicion de silencio al inicio y transmision
+%   Agregar medio segundo de silencio al inicio y al momento de transmision
+
+
+%% Diagrama de ojo de la senal en Tx y densidad espectral de potencia
+%   Se ignora el silencio inicial
+
+%% Transmision y verificacion de la senal en Tx 
+%   En el dominio del tiempo y dominio de la frecuencia
+
+
+
+
+
+
