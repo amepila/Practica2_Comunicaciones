@@ -118,17 +118,15 @@ silence = zeros(1, Fs/2);                   % Silencio de medio segundo
 signalPNRZ_silence = [silence, signalPNRZ]; % Senal con silencio al inicio
 stem(signalPNRZ_silence(1:mp*1500))         % Verificacion de silencio
 
-%% Diagrama de ojo de la senal en Tx
+%% Diagrama de ojo de la senal en Tx y densidad espectral de potencia
 %   Se ignora el silencio inicial
 
-eyediagram(signalPNRZ, 2*mp)                    % Diagrama de ojo
-%% Densidad espectral de potencia en Tx
-%   Se ignora el silencio inicial
 
-pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
+eyediagram(signalPNRZ, mp)
+pwelch(signalPNRZ,[500],[300],[500],Fs,'power')
+
 %% Transmision y verificacion de la senal en Tx 
 %   En el dominio del tiempo y dominio de la frecuencia
-
 
 
 
