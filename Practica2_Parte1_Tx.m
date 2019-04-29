@@ -99,8 +99,9 @@ header = [de2bi(w,8,'left-msb'),de2bi(h,8,'left-msb')];
 header = cast(header,'int8');       % Casteo del header a signado de 8-bits
 bits = [header,bits'];              % Concatenacion de info con el header
 
-%% Generacion de senal Polar NRZ con pulso base 
-%   
+%% Generacion de senal Polar con pulso base 
+%   Se utiliza el codigo de linea Polar NRZ
+
 pnrz1 = bits;                       % Se guarda la informacion
 pnrz1(pnrz1 == 0) = -1;             % Valores en 0 se transforman en -1
 pnrz = zeros(1,(numel(bits))*mp);   % Creacion del vector para Pulse-train
@@ -110,6 +111,7 @@ stem(signalPNRZ(1:mp*10))           % Verificacion de los primeros 10
 
 %% Adicion de silencio al inicio y transmision
 %   Agregar medio segundo de silencio al inicio y al momento de transmision
+
 
 
 %% Diagrama de ojo de la senal en Tx y densidad espectral de potencia
