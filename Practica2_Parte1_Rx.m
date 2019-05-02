@@ -21,7 +21,7 @@ recObj = audiorecorder(Fs, mpbits, nChannels, ID);
 
 %% Grabacion de audio
 
-disp('Grabando Señal...');     % Mensaje de inicio de grabacion
+disp('Grabando Senal...');      % Mensaje de inicio de grabacion
 recordblocking(recObj, time);   % Grabacion de audio determinada por time
 disp('Fin de la grabacion');    % Mensaje de final de grabacion
 %% Recuperacion de los datos
@@ -69,15 +69,31 @@ eyediagram(signalPNRZ, 2*mp);                   % Diagrama de ojo
 pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
 %% Recuperacion de la Lena recortada en escala de grises
 
-header_signal = zeros(1,56);                        % Tamano del header
-header_signal = signalPNRZ(4.228e4:mp:(4.228e4+56));
-header_signal(header_signal >= 0) = 1;
-header_signal(header_signal < 0) = 0;
+header_signal = zeros(1,56);                        % Creacion de vector del header
+header_signal = signalPNRZ(4.228e4:mp:(4.228e4+56));% Vector del header
+header_signal(header_signal >= 0) = 1;              % Umbral de decision para 1
+header_signal(header_signal < 0) = 0;               % Umbral de decision para 0
 
-preamble = header_signal(1:32);
-height = header_signal(33:40);
-weight = header_signal(41:48);
-pixBit = header_signal(49:56);
+preamble = header_signal(1:32);     % Preambulo de la senal
+height = header_signal(33:40);      % Alto de la imagen recibida
+weight = header_signal(41:48);      % Ancho de la imagen recibida
+pixBit = header_signal(49:56);      % Pixeles por bit de la imagen
 
-recovered_signal = zeros(1,height*weight);
+recovered_signal = zeros(1,height*weight*pixBit);   % Creacion de vector de la imagen
+recovered_signal = signalPNRZ(4.228e4+57:mp:end);
+recovered_signal(recovered_signal >= 0) = 1;
+recovered_signal(recovered_signal < 0) = 0;
+
+recovered_signal = recovered_signal(1:height*weight*pixBit);
+length = numel(recovered_signal);
+columns = length/8;
+recovered_signal = recovered_signal';
+
+matrix = reshape(recovered_signal,[8, columns]);
+matrix = matrix';
+
+image = bi2de(matrix);
+image = image';
+image = reshape(image, height*weight);
+imshow(uint8(image));
 
