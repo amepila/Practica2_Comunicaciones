@@ -24,7 +24,7 @@ plot(t,y)                       % Grafica de la senal senoidal
 soundsc(y,fs)                   % Reproduccion de audio
 
 %% Paso 2: Identificar el canal, es decir, obtener su respuesta en 
-%           frecuencia. Vamos a emplear tres tÈcnicas diferentes. 
+%           frecuencia. Vamos a emplear tres t√©cnicas diferentes. 
 %
 %% a) Impulso conformado por un segundo de 0 1 0 
 
@@ -32,7 +32,7 @@ Pulse = zeros(1,2*fs+1) % Vector de ceros con duracion de 2s
 Pulse(fs) = 1;          % A la mitad del vector ponemos un solo pulso
 soundsc(Pulse,fs);      % Reproducimos con una frecuencia de 96kHz
 
-%% c) Como segunda tÈcnica, utilizaremos una seÒal que tiene el mismo 
+%% c) Como segunda t√©cnica, utilizaremos una se√±al que tiene el mismo 
 %       espectro que el impulso: el ruido gaussiano
 
 Ruido = randn(1,5*fs);              % Vector de ruido gaussiano de 5s
@@ -51,7 +51,7 @@ sen4 = sin(2*pi*2000*time);             % Senoidal de 2kHz
 senTotal = sen1 + sen2 + sen3 + sen4;   % Suma de senoidales
 soundsc(senTotal,fs);                   % Lo reproducimos
 
-%% f) Genere una senal ìchirpî (-1 volt a 1 volt) de frecuencias 
+%% f) Genere una senal ‚Äúchirp‚Äù (-1 volt a 1 volt) de frecuencias 
 %       500:500:20000      
 
 t = 0:1/fs:2;                   % Vector de tiempo de 2s con pasos de 1/fs 
@@ -81,8 +81,8 @@ type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC
 stem(Prc)                                       % Graficacion del pulso
-% Preambulo de 4 octetos
-bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1];
+% Preambulo de 4 octetos para que el Rx se enganche con la sincron√≠a.
+bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 0 1 0 1 0 1  0 1 0 1 0 1 0 1 1];
 
 %% Concatenacion de bits a enviar: 
 %   Utilizar la imagen de la Lena recortada concatenada con un header 
@@ -97,9 +97,9 @@ bits = b(:);                        % Conversion a vector
 [w h] = size(lenarec);              % Obtencion de dimensiones de la imagen
 
 % Creacion de header con informacion de las dimensiones de la imagen
-header = [de2bi(w,8,'left-msb'),de2bi(h,8,'left-msb')];
+header = [de2bi(w,8,'left-msb'),de2bi(h,8,'left-msb'),de2bi(8,8,'left-msb')];
 header = cast(header,'int8');       % Casteo del header a signado de 8-bits
-bits = [header,bits'];              % Concatenacion de info con el header
+bits = [bit,header,bits'];              % Concatenacion de info con el header
 
 %% Generacion de senal Polar con pulso base 
 %   Se utiliza el codigo de linea Polar NRZ
@@ -109,14 +109,16 @@ pnrz1(pnrz1 == 0) = -1;             % Valores en 0 se transforman en -1
 pnrz = zeros(1,(numel(bits))*mp);   % Creacion del vector para Pulse-train
 pnrz(1:mp:end) = pnrz1;             % Tren de pulsos con la informacion
 signalPNRZ = conv(pnrz, Prc);       % Convolucion con pulso base
-stem(signalPNRZ(1:mp*100))          % Verificacion de primeras muestras
+Px = (1/numel(signalPNRZ))*sum(signalPNRZ*signalPNRZ'); % Signal Pulse Train Potenct
+signalPNRZ = signalPNRZ/sqrt(Px);   % Tren de pulsos normalizados
+var(signalPNRZ)
+
+plot(signalPNRZ(1:mp*100))          % Verificacion de primeras muestras
 
 %% Adicion de silencio al inicio y transmision
 %   Agregar medio segundo de silencio al inicio y al momento de transmision
 
-silence = zeros(1, Fs/2);                   % Silencio de medio segundo
-signalPNRZ_silence = [silence, signalPNRZ]; % Senal con silencio al inicio
-stem(signalPNRZ_silence(1:mp*1500))         % Verificacion de silencio
+soundsc([zeros(1, Fs/2), signalPNRZ], Fs)                 % Reproducimos
 
 %% Diagrama de ojo de la senal en Tx
 %   Se ignora el silencio inicial
@@ -128,6 +130,13 @@ eyediagram(signalPNRZ, 2*mp)                    % Diagrama de ojo
 pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
 %% Transmision y verificacion de la senal en Tx 
 %   En el dominio del tiempo y dominio de la frecuencia
+
+
+
+
+
+
+
 
 
 

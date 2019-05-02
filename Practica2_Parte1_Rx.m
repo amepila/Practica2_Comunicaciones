@@ -20,7 +20,7 @@ time = 1.2;                 % Tiempo expresada en segundos
 recObj = audiorecorder(Fs, mpbits, nChannels, ID);
 %% Grabacion de audio
 
-disp('Grabando Señal...');      % Mensaje de inicio de grabacion
+disp('Grabando SeÃ±al...');      % Mensaje de inicio de grabacion
 recordblocking(recObj, time);   % Grabacion de audio determinada por time
 disp('Fin de la grabacion');    % Mensaje de final de grabacion
 %% Recuperacion de los datos
@@ -32,8 +32,28 @@ ylabel('Amplitud')                      % Eje Y como amplitud de la senal
 xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
 title('Senal Recibida')                 % Titulo de la senal recibida
 grid on
-
+pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parte 2 - Transmision en Banda Base
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 
+
+%close all; clc; clear all;      % Borramos todo
+Fs = 96000;                     % Frecuencia de muestreo
+B = 1800;                       % Frecuencia maxima
+beta = 0.5;                     % Beta del pulso
+Rb = 2*B/(1+beta);              % Bit Rate
+E = 1/Rb;                       % Energia
+mp = Fs/Rb;                     % Muestras por bit
+Tp = 1/Rb;                      % Periodo de bit
+Ts = 1/Fs;                      % Intervalo de muestreo
+D = Tp/Ts;                      % Duracion de pulso 
+type = 'srrc';                  % Tipo de pulso
+
+[Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
+
+signalPNRZ = conv(signal_received, Prc)*(1/mp);       % Convolucion con pulso base
+plot(signalPNRZ(1:mp*1000))          % Verificacion de primeras muestras
+% Graficacion del pulso
+var1 = (sign(-signal_received(4.228e4:mp:end))+1)/2;
+%%
+eyediagram(signalPNRZ, 2*mp);
