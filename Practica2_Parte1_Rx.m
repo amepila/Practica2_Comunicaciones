@@ -111,3 +111,6 @@ b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
 b = b';                             % Transpuesta de la matrix
 bits = b(:);                        % Conversion a vector
 sum(xor(bits, payLoad))
+
+6556
+7.779e4
