@@ -18,9 +18,10 @@ time = 1.2;                 % Tiempo expresada en segundos
 
 % Creacion de objeto para guardar la grabacion de audio
 recObj = audiorecorder(Fs, mpbits, nChannels, ID);
+
 %% Grabacion de audio
 
-disp('Grabando Señal...');      % Mensaje de inicio de grabacion
+disp('Grabando Señal...');     % Mensaje de inicio de grabacion
 recordblocking(recObj, time);   % Grabacion de audio determinada por time
 disp('Fin de la grabacion');    % Mensaje de final de grabacion
 %% Recuperacion de los datos
@@ -36,9 +37,10 @@ pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parte 2 - Transmision en Banda Base
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Creacion del Match Filter
+%   Utilizar la misma Fs que la senal de Tx
 
-%close all; clc; clear all;      % Borramos todo
-Fs = 96000;                     % Frecuencia de muestreo
+Fs = 96e3;                      % Frecuencia de muestreo
 B = 1800;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
 Rb = 2*B/(1+beta);              % Bit Rate
@@ -50,10 +52,18 @@ D = Tp/Ts;                      % Duracion de pulso
 type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
+signalPNRZ = conv(signal_received, Prc)*(1/mp); % Convolucion con pulso base
+plot(signalPNRZ(1:mp*1000))                     % Verificacion de primeras muestras
 
-signalPNRZ = conv(signal_received, Prc)*(1/mp);       % Convolucion con pulso base
-plot(signalPNRZ(1:mp*1000))          % Verificacion de primeras muestras
-% Graficacion del pulso
+%% Graficacion del pulso antes del match filter
+%   Se muestra la senal recibida antes de pasar por el match filter
 var1 = (sign(-signal_received(4.228e4:mp:end))+1)/2;
-%%
-eyediagram(signalPNRZ, 2*mp);
+%% Graficacion del pulso despues del match filter
+%   Se muestra la senal recibida antes de pasar por el match filter
+var2 = (sign(-signalPNRZ(4.228e4:mp:end))+1)/2;
+%%  Diagrama de ojo de senal convolucionada
+%   Se muestra el diagrama despues de pasar la senal convolucionada
+eyediagram(signalPNRZ, 2*mp);                   % Diagrama de ojo
+%% Densidad espectral de potencia en Rx
+%   Se despliega la densidad espectral despues del match filter
+pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
