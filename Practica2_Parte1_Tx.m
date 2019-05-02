@@ -68,7 +68,7 @@ soundsc(y,fs);                  % Reproducimos
 %   Fs = 96000 Hz en Tx
 
 close all; clc; clear all;      % Borramos todo
-Fs = 96000;                     % Frecuencia de muestreo
+Fs = 96e3;                      % Frecuencia de muestreo
 B = 1800;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
 Rb = 2*B/(1+beta);              % Bit Rate
