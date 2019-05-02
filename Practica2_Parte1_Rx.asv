@@ -79,5 +79,5 @@ height = header_signal(33:40);
 weight = header_signal(41:48);
 pixBit = header_signal(49:56);
 
-recovered_signal = zeros(1,height*weight);
+
 
