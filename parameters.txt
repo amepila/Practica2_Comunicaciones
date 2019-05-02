@@ -1,2 +1,5 @@
 niveles de volumen (62 Tx, 50 Rx)
 start = 7.779e4; Signal II
+
+
+ conjunto de frecuencias que tiene la señal a TX = banda base, poner la portadora en 20KHZ
