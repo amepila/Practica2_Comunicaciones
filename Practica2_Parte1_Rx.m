@@ -32,6 +32,7 @@ plot(signal_received,'r')               % Graficacion de senal recibida
 ylabel('Amplitud')                      % Eje Y como amplitud de la senal
 xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
 title('Senal Recibida')                 % Titulo de la senal recibida
+%% Espectro de frecuencia de la senal recibida
 grid on
 pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
