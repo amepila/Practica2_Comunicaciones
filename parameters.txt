@@ -1,0 +1,2 @@
+niveles de volumen (62 Tx, 50 Rx)
+start = 7.779e4; Signal II
