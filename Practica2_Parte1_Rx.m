@@ -117,7 +117,7 @@ Fs = 96e3;                  % Frecuencia de muestreo a 96kHz
 mpbits = 16;                % 16-bits por muestra
 nChannels = 1;              % Utilizacion de un canal de audio
 ID = -1;                    % Dispositivo de entrada de audio default 
-time = 6;                   % Tiempo expresada en segundos
+time = 15;                   % Tiempo expresada en segundos
 
 % Creacion de objeto para guardar la grabacion de audio
 recObj = audiorecorder(Fs, mpbits, nChannels, ID);
@@ -139,14 +139,18 @@ xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
 title('Senal Recibida')                 % Titulo de la senal recibida
 
 %% Espectro de frecuencia de la senal recibida
+[yo]= find(signal_received > 0.01,5, 'first');
+[tu]= find(signal_received > 0.01,5, 'last');
+signal_received_ws = signal_received(yo(1):tu(1));
 grid on
-pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
+pwelch(signal_received_ws,[500],[300],[500],Fs,'power'); % Analisis con pwelch
+
 %% Demodulacion de la senal recibida con modulacion en amplitud
 
-Fc = 6500;                                      % Frecuencia de corte
-Fs = 48e3;                                      % Frecuencia de muestreo
+Fc = 10000;                                      % Frecuencia de corte
+Fs = 96e3;                                      % Frecuencia de muestreo
 [num,den] = butter(10,Fc*2/Fs);                 % Filtro pasa-bajas (LPF)
-signalDemod = amdemod(signal_received,Fc,Fs,0,0,num,den);   % Demodulacion
+signalDemod = amdemod(signal_received_ws,Fc,Fs,0,0,num,den);   % Demodulacion
 
 %% Espectro de frecuencia de la senal demodulada
 grid on
@@ -155,7 +159,7 @@ pwelch(signalDemod,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %   Utilizar la misma Fs que la senal de Tx
 
 Fs = 96e3;                      % Frecuencia de muestreo
-B = 1800;                       % Frecuencia maxima
+B = 7200;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
 Rb = 2*B/(1+beta);              % Bit Rate
 E = 1/Rb;                       % Energia
@@ -166,11 +170,9 @@ D = Tp/Ts;                      % Duracion de pulso
 type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
-signalPNRZ = conv(signal_received, Prc)*(1/mp); % Convolucion con pulso base
-plot(signalPNRZ(1:mp*5000))                     % Verificacion de primeras muestras
-%% Espectro de frecuencia de la senal convolucionada con match filter
-grid on
-pwelch(signalDemod,[500],[300],[500],Fs,'power'); % Analisis con pwelch
+signalPNRZ = conv(signalDemod, Prc)*(1/mp); % Convolucion con pulso base
+plot(signalPNRZ)                     % Verificacion de primeras muestras
+
 %% Graficacion del pulso despues del match filter
 start = 6.556e4;
 %   Se muestra la senal recibida antes de pasar por el match filter
