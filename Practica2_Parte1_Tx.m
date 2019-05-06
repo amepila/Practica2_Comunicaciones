@@ -158,7 +158,7 @@ freqz(num,den)                          % Respuesta en frecuencia
 %           para que quede centrada en 6.5 kHz. Obtenga su espectro. 
 %           Utilice Fs = 48kHz
 
-Fc = 6500;
+Fc = 6500;                      % Frecuencia de corte
 Fs = 48e3;                      % Frecuencia de muestreo
 B = 6000;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
