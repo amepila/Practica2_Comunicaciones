@@ -89,7 +89,7 @@ bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1  0 1 0 1 0 1 0 1 1];
 %   y generar una senal Polar utilizando el pulso base
 
 load lena512.mat                    % Carga de la imagen de la lena
-lenarec = lena512(252:284,318:350); % Recorte de la imagen a 32x32 pixeles
+lenarec = lena512(1:127,1:127); % Recorte de la imagen a 32x32 pixeles
 imshow(uint8(lenarec));             % Visualizacion de la imagen recortada
 b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
 b = b';                             % Transpuesta de la matrix
@@ -158,9 +158,9 @@ freqz(num,den)                          % Respuesta en frecuencia
 %           para que quede centrada en 6.5 kHz. Obtenga su espectro. 
 %           Utilice Fs = 48kHz
 
-Fc = 6500;                      % Frecuencia de corte
-Fs = 48e3;                      % Frecuencia de muestreo
-B = 6000;                       % Frecuencia maxima
+Fc = 20000;                      % Frecuencia de corte
+Fs = 96e3;                      % Frecuencia de muestreo
+B = 7200;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
 Rb = 2*B/(1+beta);              % Bit Rate
 E = 1/Rb;                       % Energia
@@ -193,5 +193,4 @@ pwelch(sam,[500],[300],[500],Fs,'power');   % Espectro de frecuencias
 
 %% Transmision de senal modulada en amplityd
 soundsc(sam,Fs);                  % Lo reproducimos
-
 %% Parte 3: Ancho de banda = 7200 Hz y ubicar la portadora en 20kHz

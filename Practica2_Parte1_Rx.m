@@ -168,7 +168,9 @@ type = 'srrc';                  % Tipo de pulso
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
 signalPNRZ = conv(signal_received, Prc)*(1/mp); % Convolucion con pulso base
 plot(signalPNRZ(1:mp*5000))                     % Verificacion de primeras muestras
-
+%% Espectro de frecuencia de la senal convolucionada con match filter
+grid on
+pwelch(signalDemod,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %% Graficacion del pulso despues del match filter
 start = 6.556e4;
 %   Se muestra la senal recibida antes de pasar por el match filter

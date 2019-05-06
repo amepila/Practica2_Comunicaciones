@@ -110,7 +110,37 @@ sum(xor(bits, payLoad))             % Errores de la recepcion de la imagen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parte 3 - Transmision en Pasa Banda con Modulacion en Amplitud
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Definicion de parametros y creacion de objeto para grabacion
 
+clear all; clc; close all;  % Limpieza del entorno
+Fs = 96e3;                  % Frecuencia de muestreo a 96kHz
+mpbits = 16;                % 16-bits por muestra
+nChannels = 1;              % Utilizacion de un canal de audio
+ID = -1;                    % Dispositivo de entrada de audio default 
+time = 6;                   % Tiempo expresada en segundos
+
+% Creacion de objeto para guardar la grabacion de audio
+recObj = audiorecorder(Fs, mpbits, nChannels, ID);
+
+%% Grabacion de audio
+
+disp('Grabando Senal...');      % Mensaje de inicio de grabacion
+recordblocking(recObj, time);   % Grabacion de audio determinada por time
+disp('Fin de la grabacion');    % Mensaje de final de grabacion
+%% Recuperacion de los datos
+
+%play(recObj);                          % Primer testeo de audio recibido
+signal_received = getaudiodata(recObj); % Obtencion de senal recibida
+signal_received = -signal_received;
+save('signal_received_mod.mat','signal_received');
+plot(signal_received,'r')               % Graficacion de senal recibida
+ylabel('Amplitud')                      % Eje Y como amplitud de la senal
+xlabel('Tiempo (ms)')                   % Eje X como tiempo en ms
+title('Senal Recibida')                 % Titulo de la senal recibida
+
+%% Espectro de frecuencia de la senal recibida
+grid on
+pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %% Demodulacion de la senal recibida con modulacion en amplitud
 
 Fc = 6500;                                      % Frecuencia de corte
@@ -118,10 +148,9 @@ Fs = 48e3;                                      % Frecuencia de muestreo
 [num,den] = butter(10,Fc*2/Fs);                 % Filtro pasa-bajas (LPF)
 signalDemod = amdemod(signal_received,Fc,Fs,0,0,num,den);   % Demodulacion
 
-%% Espectro de frecuencia de la senal recibida
+%% Espectro de frecuencia de la senal demodulada
 grid on
-pwelch(signal_received,[500],[300],[500],Fs,'power'); % Analisis con pwelch
-
+pwelch(signalDemod,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %% Creacion del Match Filter
 %   Utilizar la misma Fs que la senal de Tx
 
@@ -139,7 +168,9 @@ type = 'srrc';                  % Tipo de pulso
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
 signalPNRZ = conv(signal_received, Prc)*(1/mp); % Convolucion con pulso base
 plot(signalPNRZ(1:mp*5000))                     % Verificacion de primeras muestras
-
+%% Espectro de frecuencia de la senal convolucionada con match fuik
+grid on
+pwelch(signalDemod,[500],[300],[500],Fs,'power'); % Analisis con pwelch
 %% Graficacion del pulso despues del match filter
 start = 6.556e4;
 %   Se muestra la senal recibida antes de pasar por el match filter
