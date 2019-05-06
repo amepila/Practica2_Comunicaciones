@@ -188,7 +188,5 @@ bits = b(:);                        % Conversion a vector
 sum(xor(bits, payLoad))             % Errores de la recepcion de la imagen
 
 
-
-
 %6556
 %7.779e4
