@@ -191,4 +191,7 @@ plot(signalPNRZ(1:mp*100))          % Verificacion de primeras muestras
 sam = ammod(signalPNRZ,Fc,Fs);              % Modulacion de la senal
 pwelch(sam,[500],[300],[500],Fs,'power');   % Espectro de frecuencias
 
+%% Transmision de senal modulada en amplityd
+soundsc(sam,Fs);                  % Lo reproducimos
+
 %% Parte 3: Ancho de banda = 7200 Hz y ubicar la portadora en 20kHz
