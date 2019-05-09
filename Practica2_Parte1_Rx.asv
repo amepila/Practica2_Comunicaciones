@@ -145,9 +145,6 @@ load signal_received_mod.mat                                    % Carga de la se
 [first_sil]= find(signal_received > 0.01,5, 'first');           % Primeras muestras en silencio
 [last_sil]= find(signal_received > 0.01,5, 'last');             % Ultimas muestras en silencio                         
 signal_received_ws = signal_received(first_sil(1):last_sil(1)); % Senal sin silencio
-plot(signal_received_ws(1:mp*20))                               % Primeras muestras
-
-%% Espectro de frecuencia de la senal recibida
 grid on
 pwelch(signal_received_ws,[500],[300],[500],Fs,'power');        % Analisis en frecuencia
 
@@ -157,7 +154,6 @@ Fc = 10000;                                                 % Frecuencia de cort
 Fs = 96e3;                                                  % Frecuencia de muestreo
 [num,den] = butter(10,Fc*2/Fs);                             % Filtro pasa-bajas (LPF)
 signalDemod = amdemod(signal_received_ws,Fc,Fs,0,0,num,den);% Demodulacion de la senal
-plot(signalDemod(1:mp*50))                           % Primeras muestras
 
 %% Espectro de frecuencia de la senal demodulada
 grid on
@@ -179,21 +175,18 @@ type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
 signalPNRZ = conv(signalDemod, Prc)*(1/mp);     % Convolucion con pulso base
-plot(signalPNRZ(1:mp*150))                       % Verificacion de primeras muestras
+plot(signalPNRZ)                                % Verificacion de primeras muestras
 
 %% Graficacion del pulso despues del match filter
-start = 80;                % Punto de muestreo de la senal
-%   Se muestra la senal recibida despues de pasar por el match filter
+start = 6.556e4;
+% Se muestra la senal recibida antes de pasar por el match filter
 bits_recovered = (sign(signalPNRZ(start:mp:end))+1)/2;
-
-%% Diagrama de ojo de senal convolucionada
+%%  Diagrama de ojo de senal convolucionada
 %   Se muestra el diagrama despues de pasar la senal convolucionada
-eyediagram(signalPNRZ, 2*mp);   % Diagrama de ojo
-
+eyediagram(signalPNRZ, 2*mp);                   % Diagrama de ojo
 %% Densidad espectral de potencia en Rx
 %   Se despliega la densidad espectral despues del match filter
 pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
-
 %% Recuperacion de la Lena recortada en escala de grises
 %   Se recupera la imagen conociendo las caracterisitcas del header
 
@@ -225,8 +218,7 @@ imshow(uint8(image));                       % Despliegue de la imagen
 %   los errores de la imagen recibida con la imagen original.
 
 load lena512.mat                    % Carga de la imagen de la lena
-%lenarec = lena512(252:284,318:350); % Recorte de la imagen a 33x33 pixeles
-lenarec = lena512(1:127,1:127);    % Recorte de la imagen a 127x127 pixeles
+lenarec = lena512(252:284,318:350); % Recorte de la imagen a 32x32 pixeles
 imshow(uint8(lenarec));             % Visualizacion de la imagen recortada
 b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
 b = b';                             % Transpuesta de la matrix

@@ -81,15 +81,17 @@ type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC
 stem(Prc)                                       % Graficacion del pulso
-% Preambulo de 4 octetos para que el Rx se enganche con la sincronia.
-bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1  0 1 0 1 0 1 0 1 1];
 
 %% Concatenacion de bits a enviar: 
 %   Utilizar la imagen de la Lena recortada concatenada con un header 
 %   y generar una senal Polar utilizando el pulso base
 
+% Preambulo de 4 octetos para que el Rx se enganche con la sincronia.
+bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1  0 1 0 1 0 1 0 1 1];
+
 load lena512.mat                    % Carga de la imagen de la lena
-lenarec = lena512(1:127,1:127); % Recorte de la imagen a 32x32 pixeles
+lenarec = lena512(252:284,318:350); % Recorte de la imagen a 33x33 pixeles
+%lenarec = lena512(1:127,1:127);    % Recorte de la imagen a 127x127 pixeles
 imshow(uint8(lenarec));             % Visualizacion de la imagen recortada
 b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
 b = b';                             % Transpuesta de la matrix
@@ -131,6 +133,7 @@ pwelch(signalPNRZ,[500],[300],[500],Fs,'power') % Densidad espectral
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Paso 1: Modulacion en amplitud
 
+close all; clc; clear all;              % Borramos todo
 t = .01;
 Fc = 10000;                             % Frecuencia de corte
 Fs = 80000;                             % Frecuencia de muestreo
@@ -154,11 +157,11 @@ freqz(num,den)                          % Respuesta en frecuencia
 
 %% Paso 2: Transmision en ancho de banda grande
 %           Disene una senal de pulsos SRRC con beta = 0.5 con ancho de 
-%           de banda B = 6kHz. Utilizando AM tipo DSB-SC, module la senal
-%           para que quede centrada en 6.5 kHz. Obtenga su espectro. 
-%           Utilice Fs = 48kHz
+%           de banda B = 7.2kHz. Utilizando AM tipo DSB-SC, module la senal
+%           para que quede centrada en 20 kHz. Obtenga su espectro. 
+%           Utilice Fs = 96kHz
 
-Fc = 20000;                      % Frecuencia de corte
+Fc = 20000;                     % Frecuencia de corte
 Fs = 96e3;                      % Frecuencia de muestreo
 B = 7200;                       % Frecuencia maxima
 beta = 0.5;                     % Beta del pulso
@@ -172,6 +175,29 @@ type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC
 plot(t, Prc)                                    % Pulso base
+
+%% Concatenacion de bits a enviar: 
+%   Utilizar la imagen de la Lena recortada concatenada con un header 
+%   y generar una senal Polar utilizando el pulso base
+
+% Preambulo de 4 octetos para que el Rx se enganche con la sincronia.
+bit = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1  0 1 0 1 0 1 0 1 1];
+
+load lena512.mat                    % Carga de la imagen de la lena
+%lenarec = lena512(252:284,318:350); % Recorte de la imagen a 33x33 pixeles
+lenarec = lena512(1:127,1:127);    % Recorte de la imagen a 127x127 pixeles
+imshow(uint8(lenarec));             % Visualizacion de la imagen recortada
+b = de2bi(lenarec, 8, 'left-msb');  % Conversion a una matriz de bits
+b = b';                             % Transpuesta de la matrix
+bits = b(:);                        % Conversion a vector
+[w h] = size(lenarec);              % Obtencion de dimensiones de la imagen
+
+% Creacion de header con informacion de las dimensiones de la imagen
+header = [de2bi(w,8,'left-msb'),de2bi(h,8,'left-msb'),de2bi(8,8,'left-msb')];
+header = cast(header,'int8');       % Casteo del header a signado de 8-bits
+bits = [bit,header,bits'];          % Concatenacion de info con el header
+
+
 %% Generacion de senal Polar con pulso base 
 %   Se utiliza el codigo de linea Polar NRZ
 
@@ -191,6 +217,5 @@ plot(signalPNRZ(1:mp*100))          % Verificacion de primeras muestras
 sam = ammod(signalPNRZ,Fc,Fs);              % Modulacion de la senal
 pwelch(sam,[500],[300],[500],Fs,'power');   % Espectro de frecuencias
 
-%% Transmision de senal modulada en amplityd
+%% Transmision de senal modulada en amplitud
 soundsc(sam,Fs);                  % Lo reproducimos
-%% Parte 3: Ancho de banda = 7200 Hz y ubicar la portadora en 20kHz
