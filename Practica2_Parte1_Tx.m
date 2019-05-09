@@ -211,6 +211,8 @@ signalPNRZ = conv(pnrz, Prc);       % Convolucion con pulso base
 Px = (1/numel(signalPNRZ))*sum(signalPNRZ*signalPNRZ');
 signalPNRZ = signalPNRZ/sqrt(Px);   % Tren de pulsos normalizados
 var(signalPNRZ)                     % Verificacion de la potencia unitaria
+
+figure(3)
 plot(signalPNRZ(1:mp*100))          % Verificacion de primeras muestras
 
 %% Espectro de frecuencia de senal modulada en amplitud tipo DSB-SC

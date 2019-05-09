@@ -141,11 +141,12 @@ title('Senal Recibida')                 % Titulo de la senal recibida
 %% Espectro de frecuencia de la senal recibida
 
 load signal_received_mod.mat                                    % Carga de la senal recibida
-
+Fs = 96e3;
+mp = 10;
 [first_sil]= find(signal_received > 0.01,5, 'first');           % Primeras muestras en silencio
 [last_sil]= find(signal_received > 0.01,5, 'last');             % Ultimas muestras en silencio                         
 signal_received_ws = signal_received(first_sil(1):last_sil(1)); % Senal sin silencio
-plot(signal_received_ws(1:mp*20))                               % Primeras muestras
+plot(signal_received_ws(1:10*20))                               % Primeras muestras
 
 %% Espectro de frecuencia de la senal recibida
 grid on
@@ -153,14 +154,15 @@ pwelch(signal_received_ws,[500],[300],[500],Fs,'power');        % Analisis en fr
 
 %% Demodulacion de la senal recibida con modulacion en amplitud
 
-Fc = 10000;                                                 % Frecuencia de corte
+Fc = 20000;                                                 % Frecuencia de corte
 Fs = 96e3;                                                  % Frecuencia de muestreo
 [num,den] = butter(10,Fc*2/Fs);                             % Filtro pasa-bajas (LPF)
 signalDemod = amdemod(signal_received_ws,Fc,Fs,0,0,num,den);% Demodulacion de la senal
-plot(signalDemod(1:mp*50))                           % Primeras muestras
+plot(signalDemod(1:mp*200))                           % Primeras muestras
 
 %% Espectro de frecuencia de la senal demodulada
 grid on
+figure(2);
 pwelch(signalDemod,[500],[300],[500],Fs,'power');           % Analisis en frecuencia
 
 %% Creacion del Match Filter
@@ -179,10 +181,10 @@ type = 'srrc';                  % Tipo de pulso
 
 [Prc t] = rcpulse(beta, D, Tp, Ts, type, E);    % Generamos el pulso SRRC 
 signalPNRZ = conv(signalDemod, Prc)*(1/mp);     % Convolucion con pulso base
-plot(signalPNRZ(1:mp*150))                       % Verificacion de primeras muestras
+plot(signalPNRZ(1:mp*100))                       % Verificacion de primeras muestras
 
 %% Graficacion del pulso despues del match filter
-start = 80;                % Punto de muestreo de la senal
+start = 97;                % Punto de muestreo de la senal
 %   Se muestra la senal recibida despues de pasar por el match filter
 bits_recovered = (sign(signalPNRZ(start:mp:end))+1)/2;
 
