@@ -157,8 +157,8 @@ pwelch(signal_received_ws,[500],[300],[500],Fs,'power');        % Analisis en fr
 Fc = 20000;                                                 % Frecuencia de corte
 Fs = 96e3;                                                  % Frecuencia de muestreo
 [num,den] = butter(10,Fc*2/Fs);                             % Filtro pasa-bajas (LPF)
-signalDemod = amdemod(signal_received_ws,Fc,Fs,0,0,num,den);% Demodulacion de la senal
-plot(signalDemod(1:mp*200))                           % Primeras muestras
+signalDemod = amdemod(signal_received_ws,Fc+0.14,Fs,0,0,num,den);% Demodulacion de la senal
+plot(signalDemod)                           % Primeras muestras
 
 %% Espectro de frecuencia de la senal demodulada
 grid on
@@ -220,6 +220,7 @@ matrix = matrix';                           % Transpuesta de la matriz
 image = bi2de(matrix,'left-msb');           % Conversion de la matrix a decimales
 image = image';                             % Transpuesta de la imagen
 image = reshape(image, [height, weight]);   % Reajuste de la matriz
+figure(2)
 imshow(uint8(image));                       % Despliegue de la imagen
 
 %% Carga original de la imagen para comparacion de errores
